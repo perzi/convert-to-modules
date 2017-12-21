@@ -4,6 +4,10 @@
   "description": "Convert ES5 to modules",
   "main": "index.js",
   "scripts": {
+    "format": "prettier-eslint",
+    "lint": "eslint",
+    "lint:summary": "eslint -f node_modules/eslint-formatter-summary",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +20,21 @@
   "bugs": {
     "url": "https://github.com/perzi/convert-to-modules/issues"
   },
-  "homepage": "https://github.com/perzi/convert-to-modules#readme"
+  "homepage": "https://github.com/perzi/convert-to-modules#readme",
+  "dependencies": {
+    "escope": "^3.6.0",
+    "eslint": "^4.13.1",
+    "esprima": "^4.0.0",
+    "jscodeshift": "^0.4.0",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-config-standard-jsx": "^4.0.2",
+    "eslint-formatter-summary": "^1.0.2",
+    "eslint-plugin-react": "^7.5.1",
+    "prettier-eslint": "^8.4.0",
+    "prettier-eslint-cli": "^4.6.1",
+    "standard": "^10.0.3"
+  }
 }
