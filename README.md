@@ -2,47 +2,57 @@
 
 Tool to convert ES5 files to ES2015 modules.
 
-If you have a bunch of JavaScript files which relies on global variables and files being included in a certain order, this tool can help you inspect and create a codemod to convert the files to ES2015 modules. It can also inspect and output a dot-file to render a dependency graph.
+If you have a bunch of JavaScript files which relies on global variables and files being included in a certain order, this tool can help you convert them ES2015 modules. It can also inspect and output a dot-file to render a dependency graph. 
 
-Install [jscodeshift](https://github.com/facebook/jscodeshift) to do the conversion.
+## Why create a tool for this?
 
-Install [Graphviz](http://graphviz.org) to convert graphs to images.
+Because you can run the conversion over and over and do the actual conversion when it suits best. The project I was working on when creating this had a lot a files and there we things needed to be fixed before we could do the conversion. Converting the files and trying to bundle them we found many things we refactored before converting them. This tool helped to be able to do the conversion more than once and with the latest versions of all files.
+
+## Other tools needed
+
+[jscodeshift](https://github.com/facebook/jscodeshift) to do the conversion.
+
+[Graphviz](http://graphviz.org) to convert graphs to images.
 
 ## Install
 
-`npm install --save-dev`
+`npm install --save-dev convert-to-modules`
 
 ## CLI Usage
 
 ### Convert files
 
-`npx convert-to-modules --codemod <files> > <codemod filename>`
+`npx convert-to-modules --codemod <rootfolder> "<filepattern>" > <codemod filename>`
 
-ESLint is used internally to find globals and your files can't have any eslint comment like `/* global myglobal */` when running it. Remove them before running with `--codemod` option. There's a codemod for that `strip_eslint_global_comment.js` in the root of this project. 
+rootfolder is a parent folder which all files will be relative to.
 
 #### Example
 
 ##### Create codemod
-`npx convert-to-modules --codemod ./scripts/**/*.js > convert_scripts_codemod.js`
+
+`npx convert-to-modules --codemod scripts "scripts/**/*.js" > convert_scripts_codemod.js`
+
+Note: Make sure to put the files pattern in a string for it to work. 
 
 ##### Run jscodeshift
 
-`jscodeshift ./scripts/**/*.js --transform convert_scripts_codemod.js`
+`jscodeshift --transform convert_scripts_codemod.js <absolute root to files>/scripts/**/*.js`
 
-Note: The codemod will have full paths to files in it. The source files can't change path after codemod creation.
+Note: The codemod will have full paths to files in it. You must run it with the full path to the files. And you have to recreate a new codemod if you move the source files after creating a codemod. Any existing eslint inline comment `/* global */` will be replaced by the codemod. 
 
 ### Create dependency graph
 
-`npx convert-to-modules --graph <files> > <dotfile>`
+`npx convert-to-modules --graph <rootfolder> <filepattern> > <dotfile>`
 
 or
 
-`npx convert-to-modules --minigraph <files> > <dotfile>`
+`npx convert-to-modules --minigraph <rootfolder>  <filepattern> > <dotfile>`
 
 #### Example
 
 ##### Create graph
-`npx convert-to-modules --graph ./scripts/**/*.js > scripts_graph.dot`
+
+`npx convert-to-modules --graph scripts "scripts/**/*.js" > scripts_graph.dot`
 
 ##### Create png
 
@@ -50,9 +60,4 @@ or
 
 Will generate a file named `scripts_graph.dot.png`
 
-
-
-
-
-
-
+See [Graphviz](http://graphviz.org) documentation for more options. 

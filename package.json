@@ -2,7 +2,9 @@
   "name": "convert-to-modules",
   "version": "0.1.0",
   "description": "Convert ES5 to modules",
-  "main": "index.js",
+  "bin": {
+    "convert-to-modules": "./cli.js"
+  },
   "scripts": {
     "format": "prettier-eslint",
     "lint": "eslint",
@@ -16,7 +18,7 @@
   },
   "keywords": [],
   "author": "Per Zimmerman <per.zimmerman@gmail.com>",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/perzi/convert-to-modules/issues"
   },

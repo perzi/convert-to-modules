@@ -8,7 +8,13 @@ const fs = require('fs')
 const path = require('path')
 const program = require('commander')
 
-const cli = new CLIEngine()
+const cli = new CLIEngine({
+  useEslintrc: false,
+  allowInlineConfig: false,
+  rules: {
+    'no-undef': 'error'
+  }
+})
 
 program
   .version('0.1')
@@ -19,16 +25,22 @@ program
   .usage('[options] <file ...>')
   .parse(process.argv)
 
-const [filesRoot, includeFiles] = program.args || ['', '']
+const [filesRoot = '', includeFiles = ''] = program.args
+
+let canStart = true
 
 // ensure files patterns given
 if (filesRoot.length === 0) {
   console.error('No source root folder')
-  process.exit(1)
+  canStart = false
 }
 
 if (includeFiles.length === 0) {
-  console.error('No source root folder')
+  console.error('No files folder')
+  canStart = false
+}
+
+if (!canStart) {
   process.exit(1)
 }
 
@@ -101,11 +113,29 @@ module.exports = function(fileInfo, api) {
   var transform = data[fileInfo.path]
 
   if (transform) {
+    var j = api.jscodeshift
     var root = api.jscodeshift(source)
     var globals = transform.globals
     var imports = transform.imports
     var exports = transform.exports
     var body = root.get().node.program.body
+
+    var getFirstNode = () => root.find(j.Program).get('body', 0).node
+    var firstNode = getFirstNode()
+    var { comments = [] } = firstNode
+  
+    var commentsWithoutGlobal = comments.filter(comment => {
+      var isGlobalComment = comment &&
+        comment.type === 'CommentBlock' &&
+        comment.value
+          .trim()
+          .toLowerCase()
+          .startsWith('global')
+  
+      return !isGlobalComment
+    })
+  
+    firstNode.comments = commentsWithoutGlobal
 
     if (imports.length > 0) {
       body.unshift(imports)
@@ -153,7 +183,7 @@ digraph {
 
   ${clusters}
 
-  ${connections}
+${connections}
 }
 `
 
